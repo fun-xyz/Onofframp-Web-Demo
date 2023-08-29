@@ -7,9 +7,13 @@ import {
   MetamaskConnector,
   Goerli,
 } from "@fun-xyz/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ethers } from "ethers"
 import Modal from "react-modal";
+import { Token } from "@fun-xyz/core";
+
+const tokens = ["ETH", "USDC", "stETH"]
+
 
 //Step 1: Initialize the FunStore. This action configures your environment based on your apikey, chain, and the authentication methods of your choosing. 
 const DEFAULT_FUN_WALLET_CONFIG = {
@@ -50,6 +54,7 @@ export default function App() {
   const [url, setUrl] = useState("")
   const [amount, setAmount] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [balance, setBalance] = useState({})
 
   const { account: connectorAccount, active } = useConnector({ index: 0, autoConnect: true });
 
@@ -57,6 +62,11 @@ export default function App() {
   const { account, initializeFunAccount, funWallet } = useCreateFun()
 
   const initializeSingleAuthFunAccount = async () => {
+    if (!connectorAccount) {
+      alert("Metamask not connected. Please follow the steps.")
+      return
+    }
+
     initializeFunAccount({
       users: [{ userId: convertToValidUserId(connectorAccount) }],
       index: 1234512345 //random number
@@ -65,6 +75,10 @@ export default function App() {
 
   //Step 4: Call onRamp/offRamp using the funWallet object
   const onRamp = async () => {
+    if (!funWallet) {
+      alert("FunWallet not initialized. Please follow the steps.")
+      return
+    }
     const url = await funWallet.onRamp()
     setUrl(url)
     setLoading(true)
@@ -72,6 +86,11 @@ export default function App() {
   }
 
   const offRamp = async () => {
+    if (!funWallet) {
+      alert("FunWallet not initialized. Please follow the steps.")
+      return
+    }
+
     const url = await funWallet.offRamp()
     setUrl(url)
     openModal()
@@ -83,9 +102,14 @@ export default function App() {
 
   const getWalletAssets = async () => {
     const assets = await funWallet.getAssets()
-    const ethAmount = assets?.tokens["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"].tokenBalance
-    const amount = ethers.utils.formatEther(parseInt(ethAmount).toString())
-    setAmount(amount)
+    const ethAmount = assets?.tokens["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"]?.tokenBalance
+    if (ethAmount) {
+      const amount = ethers.utils.formatEther(parseInt(ethAmount).toString())
+      setAmount(amount)
+    }
+    else {
+      setAmount("0")
+    }
   }
 
   const closeModal = () => {
@@ -94,6 +118,20 @@ export default function App() {
     getWalletAssets()
 
   };
+
+  useEffect(() => {
+    const getBalance = async () => {
+      if (funWallet) {
+        const walletAddr = await funWallet.getAddress()
+        let out = { ...balance }
+        await Promise.all(tokens.map(async (token) => {
+          out[token] = await Token.getBalance(token, walletAddr)
+        }))
+        setBalance(out)
+      }
+    }
+    getBalance()
+  }, [funWallet])
 
   return (
     <div className="App">
@@ -130,12 +168,9 @@ export default function App() {
         </div>
         : <></>
       }
-      {amount ?
-        <div>
-          Wallet balance: {amount} eth. <a href={`https://goerli.etherscan.io/address/${account}`} target="_blank" >Block Explorer.</a>
-        </div>
-        : <></>
-      }
+      <br></br>
+      {funWallet && <>Wallet balance: {tokens.map(token => (<div key={token}>&emsp;{balance[token] ?? 0} {token} < br /></div>))}  </>}
+
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -153,5 +188,6 @@ export default function App() {
       <br></br>
       <br></br>
     </div>
+
   );
 }
