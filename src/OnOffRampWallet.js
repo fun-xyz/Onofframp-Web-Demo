@@ -6,11 +6,10 @@ import {
   configureNewFunStore,
   MetamaskConnector,
   Goerli,
-} from "@fun-xyz/react";
+} from "@funkit/react";
 import { useState, useEffect } from "react";
-import { ethers } from "ethers"
 import Modal from "react-modal";
-import { Token } from "@fun-xyz/core";
+import { Token } from "@funkit/core";
 
 const tokens = ["ETH", "USDC", "stETH"]
 
@@ -69,7 +68,7 @@ export default function App() {
 
     initializeFunAccount({
       users: [{ userId: convertToValidUserId(connectorAccount) }],
-      index: parseInt(Math.random()*10000000) //random number
+      index: parseInt(Math.random() * 10000000) //random number
     }).catch()
   }
 
@@ -103,7 +102,7 @@ export default function App() {
   const closeModal = () => {
     setModalIsOpen(false);
     setLoading(false)
-    
+
   };
 
   useEffect(() => {
