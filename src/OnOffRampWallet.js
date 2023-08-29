@@ -59,7 +59,7 @@ export default function App() {
   const initializeSingleAuthFunAccount = async () => {
     initializeFunAccount({
       users: [{ userId: convertToValidUserId(connectorAccount) }],
-      index: 214
+      index: 1234512345 //random number
     }).catch()
   }
 
