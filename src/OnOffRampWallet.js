@@ -69,7 +69,7 @@ export default function App() {
 
     initializeFunAccount({
       users: [{ userId: convertToValidUserId(connectorAccount) }],
-      index: 1234512345 //random number
+      index: parseInt(Math.random()*10000000) //random number
     }).catch()
   }
 
