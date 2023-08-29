@@ -6,9 +6,9 @@ import {
   configureNewFunStore,
   MetamaskConnector,
   Goerli,
-  usePrimaryAuth,
 } from "@fun-xyz/react";
 import { useState } from "react";
+import { ethers } from "ethers"
 import Modal from "react-modal";
 
 //Step 1: Initialize the FunStore. This action configures your environment based on your ApiKey, chain, and the authentication methods of your choosing. 
@@ -48,30 +48,26 @@ const ConnectorButton = ({ index }) => {
 export default function App() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [url, setUrl] = useState("")
+  const [amount, setAmount] = useState(0)
+  const [loading, setLoading] = useState(false)
+
   const { account: connectorAccount, active } = useConnector({ index: 0, autoConnect: true });
 
   //Step 3: Use the initializeFunAccount method to create your funWallet object
   const { account, initializeFunAccount, funWallet } = useCreateFun()
 
-  //Step 4: Use the auth and funWallet to perform actions (ie: swap, transfer, etc.)
-  const [auth] = usePrimaryAuth()
-
-
   const initializeSingleAuthFunAccount = async () => {
-    // if (!connectorAccount) {
-    //   console.log(await activate())
-    //   return
-    // }
     initializeFunAccount({
       users: [{ userId: convertToValidUserId(connectorAccount) }],
       index: 214
     }).catch()
   }
 
-
+  //Step 4: Call onRamp/offRamp using the funWallet object
   const onRamp = async () => {
     const url = await funWallet.onRamp()
     setUrl(url)
+    setLoading(true)
     openModal()
   }
 
@@ -85,14 +81,24 @@ export default function App() {
     setModalIsOpen(true);
   };
 
+  const getWalletAssets = async () => {
+    const assets = await funWallet.getAssets()
+    const ethAmount = assets?.tokens["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"].tokenBalance
+    const amount = ethers.utils.formatEther(parseInt(ethAmount).toString())
+    setAmount(amount)
+  }
+
   const closeModal = () => {
     setModalIsOpen(false);
+    setLoading(false)
+    getWalletAssets()
+
   };
 
   return (
     <div className="App">
       <h1>Onramp and OffRamp Funds to FunWallet</h1>
-      1. Connect Metamask.
+      1.&ensp;
       <ConnectorButton key={0} index={0} ></ConnectorButton>
       {
         active ?
@@ -104,7 +110,7 @@ export default function App() {
       <br></br>
       <br></br>
 
-      2. Initialize the FunWallet and Auth object.
+      2.&ensp;
       <button onClick={initializeSingleAuthFunAccount}>Initialize FunWallet</button>
       {account ?
         <div>
@@ -115,10 +121,21 @@ export default function App() {
       <br></br>
       <br></br>
 
-      3. Onramp or Offramp funds into FunWallet
-      <button onClick={onRamp} >OnRamp FunWallet</button>
+      3.&ensp;
+      <button onClick={onRamp} >OnRamp FunWallet</button> &ensp;
       <button onClick={offRamp} >OffRamp FunWallet</button>
-
+      {loading ?
+        <div>
+          Loading...
+        </div>
+        : <></>
+      }
+      {amount ?
+        <div>
+          Wallet balance: {amount} eth. <a href={`https://goerli.etherscan.io/address/${account}`} target="_blank" >Block Explorer.</a>
+        </div>
+        : <></>
+      }
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
@@ -128,7 +145,7 @@ export default function App() {
         <div id="modalContent" className="modal-content">
           <iframe
             id="moonpayIframe"
-            src={url?url:""}
+            src={url ? url : ""}
             title="MoonPay"
           ></iframe>
         </div>
