@@ -100,23 +100,10 @@ export default function App() {
     setModalIsOpen(true);
   };
 
-  const getWalletAssets = async () => {
-    const assets = await funWallet.getAssets()
-    const ethAmount = assets?.tokens["0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"]?.tokenBalance
-    if (ethAmount) {
-      const amount = ethers.utils.formatEther(parseInt(ethAmount).toString())
-      setAmount(amount)
-    }
-    else {
-      setAmount("0")
-    }
-  }
-
   const closeModal = () => {
     setModalIsOpen(false);
     setLoading(false)
-    getWalletAssets()
-
+    
   };
 
   useEffect(() => {
@@ -131,7 +118,7 @@ export default function App() {
       }
     }
     getBalance()
-  }, [funWallet])
+  }, [modalIsOpen, funWallet])
 
   return (
     <div className="App">
