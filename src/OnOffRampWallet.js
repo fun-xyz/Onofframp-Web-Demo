@@ -14,7 +14,7 @@ import { Token } from "@funkit/core";
 const tokens = ["ETH", "USDC", "stETH"]
 
 
-//Step 1: Initialize the FunStore. This action configures your environment based on your apikey, chain, and the authentication methods of your choosing. 
+//Step 1: Initialize the FunStore. This action configures your environment based on your apikey, chain, and the authentication methods of your choosing.
 const DEFAULT_FUN_WALLET_CONFIG = {
   apiKey: "hnHevQR0y394nBprGrvNx4HgoZHUwMet5mXTOBhf",
   chain: Goerli,
@@ -32,7 +32,7 @@ configureNewFunStore({
   connectors: DEFAULT_CONNECTORS,
 });
 
-//Step 2: Use the connector button to connect your authentication method, in this case metamask. 
+//Step 2: Use the connector button to connect your authentication method, in this case metamask.
 const ConnectorButton = ({ index }) => {
   const { active, activate, deactivate, connectorName, connector } = useConnector({ index });
 
