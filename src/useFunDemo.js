@@ -73,7 +73,6 @@ const useFunDemo = () => {
     }
     const onrampUrl = await funWallet.onRamp();
     setMoonpayUrl(onrampUrl);
-    console.log(onrampUrl);
   }, [funWallet, setMoonpayUrl]);
 
   const offRamp = useCallback(async () => {
