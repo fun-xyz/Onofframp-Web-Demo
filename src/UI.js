@@ -77,7 +77,7 @@ const App = () => {
 
   return (
     <div>
-      <h2>Onramp and OffRamp Funds to FunWallet</h2>
+      <h2>Onramp and Offramp Funds to FunWallet</h2>
       <ChecklistItems stepNumber={step}>
         <div>
           <h3>

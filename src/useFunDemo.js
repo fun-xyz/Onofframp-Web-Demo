@@ -35,7 +35,6 @@ const useFunDemo = () => {
     active: connectionIsActive,
     activate,
     deactivate,
-    connectorName,
     connector,
     account: connectorAccount,
   } = useConnector({ index: 0 });
@@ -108,7 +107,6 @@ const useFunDemo = () => {
     offRamp,
     funWallet,
     connectionIsActive,
-    connectorName,
     connector,
     account,
     moonpayUrl,
