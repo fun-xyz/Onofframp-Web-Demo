@@ -6,7 +6,6 @@ import {
   configureNewFunStore,
   MetamaskConnector,
   Goerli,
-  usePrimaryAuth,
 } from "@funkit/react";
 import { useState, useCallback } from "react";
 import { Token } from "@funkit/core";
