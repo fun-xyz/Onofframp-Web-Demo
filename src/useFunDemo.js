@@ -6,6 +6,7 @@ import {
   configureNewFunStore,
   MetamaskConnector,
   Goerli,
+  usePrimaryAuth,
 } from "@funkit/react";
 import { useState, useCallback } from "react";
 import { Token } from "@funkit/core";
@@ -37,7 +38,7 @@ const useFunDemo = () => {
     deactivate,
     connector,
     account: connectorAccount,
-  } = useConnector({ index: 0 });
+  } = useConnector({ index: 0, autoConnect: true });
 
   const toggleConnect = useCallback(async () => {
     if (connectionIsActive) {
